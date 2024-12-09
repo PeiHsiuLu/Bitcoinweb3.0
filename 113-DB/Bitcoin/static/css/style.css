@@ -305,3 +305,8 @@ a:hover {
         opacity: 0.5;
     }
 }
+
+#flash-message {
+    opacity: 1; /* 初始狀態為完全顯示 */
+    transition: opacity 0.5s ease; /* 逐漸隱藏效果 */
+}

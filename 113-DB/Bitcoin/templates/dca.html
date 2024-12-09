@@ -72,6 +72,15 @@
                     <input type="number" class="form-control" id="amount" name="amount" step="0.01" 
                            placeholder="Enter Amount" value="{{ amount }}" required>
                 </div>
+                <div class="mb-3">
+                    <label for="interval" class="form-label">Currency type</label>
+                    <select class="form-select" id="interval" name="interval" required>
+                        <option value="" disabled {% if not interval %}selected{% endif %}>Select Currency</option>
+                        <option value="daily" {% if interval == 'daily' %}selected{% endif %}>Bitcoin</option>
+                        <option value="weekly" {% if interval == 'weekly' %}selected{% endif %}>ETH</option>
+                        <option value="monthly" {% if interval == 'monthly' %}selected{% endif %}>ADA</option>
+                    </select>
+                </div>
 
                 <button type="submit" class="btn btn-cyberpunk w-100 mb-3">Calculate</button>
                 <a href="{{ url_for('index') }}" class="btn btn-cyberpunk w-100">Back to Home</a>
@@ -96,6 +105,7 @@
                 rangeSeparator: " to "
             }
         });
+        
     </script>
 </body>
 </html>
