@@ -12,6 +12,8 @@ import datetime
 import os
 from dotenv import load_dotenv
 from flask_caching import Cache  # 添加缓存套件
+import random
+import json
 
 # 加载环境变量
 load_dotenv()
@@ -103,6 +105,10 @@ def login():
             if bcrypt.check_password_hash(user_data['password'], password):
                 user = User(user_id=user_data['_id'], username=username, is_admin=user_data.get('is_admin', False))
                 login_user(user)
+
+                # 設置剛剛登入的標誌
+                session['just_logged_in'] = True
+
                 flash("Login successful!", "success")
                 return redirect(url_for('index'))
             else:
@@ -111,6 +117,7 @@ def login():
             flash("Username does not exist.", "error")
 
     return render_template('login.html', form=form)
+
 
 # 登出
 @app.route('/logout')
@@ -175,18 +182,24 @@ def get_historical_data(symbol, interval, start_time, end_time_ms):
 
 @app.route('/')
 def index():
-    """主页显示所有日志和实时比特币价格"""
+    """首頁顯示所有日志和實時比特幣價格"""
     try:
         logs = logs_collection.find()
-        # 转换每个日志的 _id 为字符串，安全地处理缺失的 user_id
         logs = [{**log, "_id": str(log["_id"]), "user_id": str(log.get("user_id", ""))} for log in logs]
         bitcoin_price = get_bitcoin_price()
-        return render_template('index.html', logs=logs, bitcoin_price=bitcoin_price)
+
+        # 檢查是否剛剛登入
+        just_logged_in = session.pop('just_logged_in', False)
+
+        # 將剛剛登入的標誌傳遞給前端
+        return render_template('index.html', logs=logs, bitcoin_price=bitcoin_price, just_logged_in=just_logged_in)
     except Exception as e:
         print(f"Error loading index page: {e}")
         traceback.print_exc()
         flash("An error occurred while loading the main page.", "error")
-        return redirect(url_for('login'))  # 或自定义错误页面
+        return redirect(url_for('login'))
+
+
 
 # 创建新日志（仅限登录用户）
 @app.route('/create', methods=['GET', 'POST'])
@@ -483,6 +496,100 @@ def bitcoin_historical_data():
 def bitcoin_price_api():
     price = get_bitcoin_price()
     return jsonify({'price': price})
+
+@app.route('/profile')
+@login_required
+def profile():
+    # 獲取用戶的日誌
+    user_logs = list(logs_collection.find({'user_id': current_user.id}))  # 用戶的日誌列表
+    for log in user_logs:
+        log['_id'] = str(log['_id'])  # 確保 ObjectId 轉成字符串以供前端使用
+
+    # 獲取用戶的回報紀錄
+    feedback_records = list(db.feedbacks.find({'user_id': current_user.id}))  # 用戶的回報記錄
+    for feedback in feedback_records:
+        feedback['_id'] = str(feedback['_id'])  # 同樣轉成字符串
+
+    # 用戶資訊
+    user_info = {
+        'username': current_user.username,
+        'is_admin': current_user.is_admin
+    }
+
+    return render_template('profile.html', user=user_info, logs=user_logs, feedbacks=feedback_records)
+
+
+
+@app.route('/todo', methods=['GET', 'POST'])
+@login_required
+def todo():
+    if request.method == 'POST':
+        task = request.form.get('task')
+        if task:
+            db.todos.insert_one({'user_id': current_user.id, 'task': task, 'completed': False})
+    tasks = db.todos.find({'user_id': current_user.id})
+    return render_template('todo.html', tasks=tasks)
+
+@app.route('/todo/delete/<task_id>', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    db.todos.delete_one({'_id': ObjectId(task_id), 'user_id': current_user.id})
+    return redirect(url_for('todo'))
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    if request.method == 'POST':
+        feedback = request.form.get('feedback')
+        if feedback:
+            if current_user.is_authenticated:  # 檢查是否為已登入用戶
+                user_id = current_user.id
+            else:
+                user_id = "anonymous"  # 對未登入用戶設置匿名 ID
+            
+            db.feedbacks.insert_one({'user_id': user_id, 'feedback': feedback})
+            flash("Thank you for your feedback!", "success")
+            return redirect(url_for('feedback'))  # 提交後刷新頁面
+    return render_template('feedback.html')
+
+
+@app.route('/api/quotes')
+def get_quotes():
+    try:
+        # 确保文件路径正确，且文件存在
+        file_path = os.path.join(os.getcwd(), 'quotes.json')  # 假设 quotes.json 在项目根目录
+        with open(file_path, 'r', encoding='utf-8') as file:
+            quotes = json.load(file)  # 加载 JSON 文件
+        return jsonify(quotes)  # 使用 Flask 的 jsonify 返回响应
+    except FileNotFoundError:
+        print("Error: quotes.json file not found.")
+        return jsonify({"error": "Quotes file not found."}), 404
+    except json.JSONDecodeError as e:
+        print(f"Error parsing quotes.json: {e}")
+        return jsonify({"error": "Invalid JSON format in quotes file."}), 500
+    except Exception as e:
+        print(f"Error loading quotes: {e}")
+        return jsonify({"error": "Unable to load quotes."}), 500
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    """
+    搜尋所有用戶的日誌（logs）
+    """
+    query = request.form.get('query', '').strip()  # 從表單中獲取搜尋的關鍵字
+    search_results = []
+
+    if query:  # 如果有關鍵字，執行搜尋
+        logs_cursor = logs_collection.find({"$or": [
+            {"name": {"$regex": query, "$options": "i"}},  # 搜尋名稱（忽略大小寫）
+            {"description": {"$regex": query, "$options": "i"}}  # 搜尋描述（忽略大小寫）
+        ]})
+
+        # 將搜尋結果轉為列表
+        search_results = [{"_id": str(log["_id"]), "name": log["name"], "description": log["description"]} for log in logs_cursor]
+
+    return render_template('search_results.html', query=query, search_results=search_results)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

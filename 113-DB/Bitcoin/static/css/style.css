@@ -310,3 +310,28 @@ a:hover {
     opacity: 1; /* 初始狀態為完全顯示 */
     transition: opacity 0.5s ease; /* 逐漸隱藏效果 */
 }
+
+.custom-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 15px;
+}
+
+.custom-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.custom-btn:active {
+    transform: scale(1);
+    background-color: #003f7f;
+}
