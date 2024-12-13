@@ -56,8 +56,6 @@ python-dotenv==1.0.1
 ## User
 - User's Profile  
 ![image](https://github.com/user-attachments/assets/2d680935-76e1-41eb-8bbc-4c566bf46228)  
-- Feedback to administrator  
-![image](https://github.com/user-attachments/assets/48ed2a0a-b37a-492e-9523-88d2eed21bd7)  
 - Report Issue  
 ![image](https://github.com/user-attachments/assets/9b896129-fa66-448d-bded-cb968f3c95db)  
 
