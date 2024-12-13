@@ -3,6 +3,26 @@ The bitcoinwebapp buit in Flask and mongodb
 # Code
 [Source Code](https://github.com/PeiHsiuLu/Bitcoinweb3.0)  
 
+# How to use
+- attachment  
+Flask==3.0.3  
+Flask-Bcrypt==1.0.1  
+Flask-Login==0.6.3  
+Flask-WTF==1.2.2  
+Flask_caching==2.3.0  
+pymongo==4.10.1  
+requests==2.32.3  
+python-dotenv==1.0.1
+
+- python version  
+  python 3.11
+    
+- run it
+  ```bash
+  python app.py
+  ```
+
+
 ---
 # Functions
 ## Main Page
