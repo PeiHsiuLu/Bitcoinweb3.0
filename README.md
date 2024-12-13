@@ -32,6 +32,7 @@ The bitcoinwebapp buit in Flask and mongodb
 ## quotes
 ![image](https://github.com/user-attachments/assets/298693b9-b30e-4d90-9108-063444ddf291)  
 
+---
 ## User
 - User's Profile  
 ![image](https://github.com/user-attachments/assets/2d680935-76e1-41eb-8bbc-4c566bf46228)  
@@ -40,6 +41,7 @@ The bitcoinwebapp buit in Flask and mongodb
 - Report Issue  
 ![image](https://github.com/user-attachments/assets/9b896129-fa66-448d-bded-cb968f3c95db)  
 
+---
 ## DCA Calculator
 ![image](https://github.com/user-attachments/assets/dc301ea0-8a00-4ca4-9e24-bde4e7a90f76)  
 ![image](https://github.com/user-attachments/assets/007c3041-73e4-4fa5-bcde-50fcfd781d1d)  
