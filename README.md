@@ -64,6 +64,22 @@ python-dotenv==1.0.1
 ![image](https://github.com/user-attachments/assets/dc301ea0-8a00-4ca4-9e24-bde4e7a90f76)  
 ![image](https://github.com/user-attachments/assets/007c3041-73e4-4fa5-bcde-50fcfd781d1d)  
 
+---
+# Database
+- feedbacks
+  ![image](https://github.com/user-attachments/assets/83522986-e524-44d8-8622-1293303b4e7c)
+- quotes
+  ![image](https://github.com/user-attachments/assets/b6774169-6783-4a58-a249-1f12ac557e87)
+- startup-log(comments)
+  ![image](https://github.com/user-attachments/assets/c000be86-0db4-4588-8a09-331b4c6c6be1)
+- users
+  ![image](https://github.com/user-attachments/assets/800f74c6-96c5-40fd-afe3-6a694e236145)
+  
+---
+
+
+
+
 
 
 
